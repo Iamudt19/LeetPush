@@ -102,11 +102,13 @@ function showNotePanel(submission: AcceptedSubmission): void {
     right: '24px',
     zIndex: '999998',
     width: '340px',
-    background: '#0f172a',
-    border: '1px solid #334155',
-    borderRadius: '12px',
-    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.7)',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    background: 'rgba(18, 27, 44, 0.9)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '14px',
+    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12), 0 20px 40px -10px rgba(0,0,0,0.8)',
+    fontFamily: '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     fontSize: '13px',
     color: '#f8fafc',
     overflow: 'hidden',
@@ -116,45 +118,45 @@ function showNotePanel(submission: AcceptedSubmission): void {
   });
 
   panel.innerHTML = `
-    <div style="background:#1e293b; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155;">
-      <div style="display:flex; align-items:center; gap:6px; font-weight:700;">
-        <span style="font-size:14px;">⚡</span> LeetPush – Add Details
+    <div style="background:rgba(255, 255, 255, 0.04); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08);">
+      <div style="display:flex; align-items:center; gap:8px; font-weight:800; font-size:14px; background:linear-gradient(135deg, #38bdf8, #6366f1); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+        <span style="font-size:15px; -webkit-text-fill-color:initial;">⚡</span> LeetPush Notes
       </div>
-      <button id="lp-panel-close" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:16px; padding:2px 6px; border-radius:4px;" title="Dismiss">✕</button>
+      <button id="lp-panel-close" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); color:#94a3b8; cursor:pointer; font-size:14px; padding:3px 8px; border-radius:6px; transition:all 0.2s;" title="Dismiss">✕</button>
     </div>
-    <div style="padding:12px 14px; display:flex; flex-direction:column; gap:10px;">
-      <div style="color:#94a3b8; font-size:11px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">
+    <div style="padding:14px 16px; display:flex; flex-direction:column; gap:12px;">
+      <div style="color:#94a3b8; font-size:10px; font-weight:800; letter-spacing:0.8px; text-transform:uppercase;">
         #${submission.problem.number} ${submission.problem.title}
       </div>
 
       <div style="display:flex; flex-direction:column; gap:4px;">
-        <label style="font-size:12px; color:#94a3b8;" for="lp-complexity-input">Complexity (optional)</label>
+        <label style="font-size:11px; font-weight:700; color:#cbd5e1;" for="lp-complexity-input">Complexity (optional)</label>
         <input
           id="lp-complexity-input"
           type="text"
           placeholder="e.g. Time: O(n log n) | Space: O(n)"
-          style="background:#1e293b; border:1px solid #334155; border-radius:6px; color:#f8fafc; font-size:12px; padding:7px 10px; outline:none; width:100%; box-sizing:border-box;"
+          style="background:rgba(15, 23, 42, 0.8); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#f8fafc; font-size:12px; padding:8px 12px; outline:none; width:100%; box-sizing:border-box; font-family:inherit;"
         />
       </div>
 
       <div style="display:flex; flex-direction:column; gap:4px;">
-        <label style="font-size:12px; color:#94a3b8;" for="lp-notes-input">Approach Note (optional)</label>
+        <label style="font-size:11px; font-weight:700; color:#cbd5e1;" for="lp-notes-input">Approach Note (optional)</label>
         <textarea
           id="lp-notes-input"
           placeholder="Briefly describe your approach, key insights, or algorithm used..."
           rows="3"
-          style="background:#1e293b; border:1px solid #334155; border-radius:6px; color:#f8fafc; font-size:12px; padding:7px 10px; outline:none; width:100%; box-sizing:border-box; resize:vertical; font-family:inherit;"
+          style="background:rgba(15, 23, 42, 0.8); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#f8fafc; font-size:12px; padding:8px 12px; outline:none; width:100%; box-sizing:border-box; resize:vertical; font-family:inherit;"
         ></textarea>
       </div>
 
       <div style="display:flex; gap:8px; align-items:center;">
-        <button id="lp-save-note" style="background:#38bdf8; color:#0f172a; border:none; border-radius:6px; font-size:12px; font-weight:700; padding:7px 14px; cursor:pointer; flex:1; transition:background 0.2s;">
-          Save
+        <button id="lp-save-note" style="background:linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); color:#070a13; border:none; border-radius:8px; font-size:12px; font-weight:800; padding:8px 14px; cursor:pointer; flex:1; transition:all 0.2s; box-shadow:0 4px 12px rgba(0, 242, 254, 0.25);">
+          Save Note
         </button>
-        <button id="lp-skip-note" style="background:#334155; color:#94a3b8; border:none; border-radius:6px; font-size:12px; font-weight:600; padding:7px 10px; cursor:pointer; transition:background 0.2s;">
+        <button id="lp-skip-note" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); color:#94a3b8; border-radius:8px; font-size:12px; font-weight:600; padding:8px 12px; cursor:pointer; transition:all 0.2s;">
           Skip
         </button>
-        <button id="lp-block-problem" style="background:transparent; border:1px solid #f43f5e33; color:#f43f5e; border-radius:6px; font-size:11px; font-weight:600; padding:7px 10px; cursor:pointer; white-space:nowrap;" title="Never push this problem again">
+        <button id="lp-block-problem" style="background:transparent; border:1px solid rgba(244, 63, 94, 0.3); color:#f43f5e; border-radius:8px; font-size:11px; font-weight:700; padding:8px 10px; cursor:pointer; white-space:nowrap;" title="Never push this problem again">
           ⊘ Skip Problem
         </button>
       </div>
