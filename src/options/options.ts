@@ -3,7 +3,7 @@ import { getConfig, saveConfig, getSyncHistory, getSkippedSlugs, removeSkippedSl
 import { authenticateWithToken, disconnectGitHub } from '../github/github-auth';
 import { GitHubApi } from '../github/github-api';
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function init() {
   // Elements
   const connectionBadge = document.getElementById('connection-badge')!;
   const tokenInput = document.getElementById('github-token') as HTMLInputElement;
@@ -374,4 +374,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   await loadConfigData();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}

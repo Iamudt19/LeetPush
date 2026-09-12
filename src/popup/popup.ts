@@ -1,7 +1,7 @@
 import type { StorageData, SyncRecord, PendingSync, DifficultyStats, LanguageStat, SolveStreakInfo } from '../types';
 import { getStorageData } from '../storage/storage';
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function init() {
   const disconnectedView = document.getElementById('disconnected-view')!;
   const connectedView = document.getElementById('connected-view')!;
   const settingsBtn = document.getElementById('settings-btn')!;
@@ -366,4 +366,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   await render();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
