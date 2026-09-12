@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output (not committed — load dist/ locally into Chrome)
+dist/
+
+# Old zip artifacts
+*.zip
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Test coverage reports
+coverage/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Editor
+.vscode/settings.json
+.idea/
+*.suo
+*.user

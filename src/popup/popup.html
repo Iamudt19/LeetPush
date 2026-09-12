@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeetPush</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <span class="logo-icon">⚡</span>
+        <span class="brand-name">LeetPush</span>
+      </div>
+      <button id="settings-btn" class="icon-btn" title="Open Settings">⚙️</button>
+    </header>
+
+    <!-- Disconnected View -->
+    <div id="disconnected-view" class="view hidden">
+      <div class="alert-card">
+        <div class="alert-title">GitHub Not Connected</div>
+        <p class="alert-desc">Connect your GitHub account to automatically synchronize your accepted LeetCode solutions.</p>
+        <button id="connect-btn" class="primary-btn">Connect GitHub</button>
+      </div>
+    </div>
+
+    <!-- Connected View -->
+    <div id="connected-view" class="view hidden">
+      <!-- Status Card -->
+      <div class="card status-card">
+        <div class="status-indicator">
+          <span class="status-dot online"></span>
+          <span class="status-text" id="status-user">Connected as ...</span>
+        </div>
+
+        <div class="meta-row">
+          <span class="meta-label">Repository:</span>
+          <span class="meta-value" id="status-repo">...</span>
+        </div>
+
+        <div class="meta-row" id="last-sync-container">
+          <span class="meta-label">Last Sync:</span>
+          <span class="meta-value" id="status-last-sync">None yet</span>
+        </div>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="dashboard" id="tab-dashboard">Dashboard</button>
+        <button class="tab-btn" data-tab="stats" id="tab-stats">Stats</button>
+        <button class="tab-btn" data-tab="queue" id="tab-queue">
+          Queue <span id="queue-badge" class="tab-badge hidden">0</span>
+        </button>
+      </div>
+
+      <!-- Tab: Dashboard -->
+      <div id="tab-content-dashboard" class="tab-content active">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-num text-success" id="stat-synced">0</span>
+            <span class="stat-label">Synced</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num text-error" id="stat-failed">0</span>
+            <span class="stat-label">Failed</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num text-pending" id="stat-pending">0</span>
+            <span class="stat-label">Queue</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+          <button id="open-repo-btn" class="secondary-btn">Open Repository ↗</button>
+          <button id="sync-now-btn" class="primary-btn">Sync Now ↻</button>
+        </div>
+
+        <!-- Recent History Section -->
+        <div class="history-section">
+          <div class="section-header">
+            <span class="section-title">Recent Syncs</span>
+          </div>
+          <div id="history-list" class="history-list">
+            <div class="empty-state">No submissions synced yet.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Stats -->
+      <div id="tab-content-stats" class="tab-content hidden">
+        <!-- Streak card -->
+        <div class="stats-hero-row">
+          <div class="streak-card">
+            <div class="streak-number" id="streak-current">0</div>
+            <div class="streak-label">Day Streak 🔥</div>
+          </div>
+          <div class="period-counts">
+            <div class="period-item">
+              <span class="period-value" id="stats-today">0</span>
+              <span class="period-label">Today</span>
+            </div>
+            <div class="period-item">
+              <span class="period-value" id="stats-week">0</span>
+              <span class="period-label">This Week</span>
+            </div>
+            <div class="period-item">
+              <span class="period-value" id="stats-month">0</span>
+              <span class="period-label">This Month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Difficulty breakdown -->
+        <div class="section-header" style="margin-top:6px;">
+          <span class="section-title">By Difficulty</span>
+        </div>
+        <div class="diff-bars" id="diff-bars">
+          <div class="diff-bar-row">
+            <span class="diff-label easy">Easy</span>
+            <div class="diff-bar-wrap"><div class="diff-bar easy-bar" id="bar-easy"></div></div>
+            <span class="diff-count" id="count-easy">0</span>
+          </div>
+          <div class="diff-bar-row">
+            <span class="diff-label medium">Medium</span>
+            <div class="diff-bar-wrap"><div class="diff-bar medium-bar" id="bar-medium"></div></div>
+            <span class="diff-count" id="count-medium">0</span>
+          </div>
+          <div class="diff-bar-row">
+            <span class="diff-label hard">Hard</span>
+            <div class="diff-bar-wrap"><div class="diff-bar hard-bar" id="bar-hard"></div></div>
+            <span class="diff-count" id="count-hard">0</span>
+          </div>
+        </div>
+
+        <!-- Top languages -->
+        <div class="section-header" style="margin-top:8px;">
+          <span class="section-title">Top Languages</span>
+        </div>
+        <div id="lang-list" class="lang-list">
+          <div class="empty-state">No data yet.</div>
+        </div>
+      </div>
+
+      <!-- Tab: Queue (Feature 13) -->
+      <div id="tab-content-queue" class="tab-content hidden">
+        <div id="queue-list" class="queue-list">
+          <div class="empty-state">No pending submissions. ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status feedback banner -->
+    <div id="action-banner" class="action-banner hidden"></div>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

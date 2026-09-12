@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeetPush Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="page-header">
+      <div class="logo">
+        <span class="icon">⚡</span>
+        <h1>LeetPush Settings</h1>
+      </div>
+      <div id="connection-badge" class="badge badge-disconnected">Disconnected</div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="settings-grid">
+      <!-- Section 1: GitHub Authentication -->
+      <section class="card">
+        <h2>1. GitHub Connection</h2>
+        <p class="section-desc">Connect using a GitHub Personal Access Token with repository permissions.</p>
+
+        <div class="form-group" id="token-input-group">
+          <label for="github-token">Personal Access Token (classic or fine-grained):</label>
+          <div class="input-with-action">
+            <input
+              type="password"
+              id="github-token"
+              placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+              autocomplete="off"
+            />
+            <button id="toggle-token-btn" class="secondary-btn" type="button">Show</button>
+          </div>
+          <small class="help-text">
+            Required scope: <code>repo</code> (Full control of private repositories) or public_repo.
+            <a href="https://github.com/settings/tokens/new?scopes=repo&description=LeetPush%20Extension" target="_blank" rel="noopener">Create token here ↗</a>
+          </small>
+        </div>
+
+        <div class="button-row">
+          <button id="connect-btn" class="primary-btn">Verify &amp; Connect</button>
+          <button id="disconnect-btn" class="danger-btn hidden">Disconnect</button>
+        </div>
+
+        <div id="user-info-banner" class="user-banner hidden">
+          <img id="user-avatar" src="" alt="Avatar" class="avatar" />
+          <div>
+            <div id="user-name" class="font-bold"></div>
+            <div id="user-login" class="text-muted"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Repository Settings -->
+      <section class="card">
+        <h2>2. Target Repository</h2>
+        <p class="section-desc">Select where your LeetCode solutions will be committed.</p>
+
+        <div class="form-group">
+          <label for="repo-select">Select from your repositories:</label>
+          <div class="input-with-action">
+            <select id="repo-select" disabled>
+              <option value="">-- Connect GitHub first to load repositories --</option>
+            </select>
+            <button id="refresh-repos-btn" class="secondary-btn" type="button" disabled>↻</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="repo-custom">Or enter repository manually (owner/repo):</label>
+          <input type="text" id="repo-custom" placeholder="e.g. your-username/leetcode-solutions" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="branch-input">Branch:</label>
+            <input type="text" id="branch-input" value="main" />
+          </div>
+
+          <div class="form-group flex-1">
+            <label for="base-dir-input">Base Directory:</label>
+            <input type="text" id="base-dir-input" value="solutions" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Formatting & Duplicate Strategy -->
+      <section class="card">
+        <h2>3. File Naming &amp; Strategy</h2>
+        <p class="section-desc">Customize commit messages, folder structure, and collision behavior.</p>
+
+        <div class="form-group">
+          <label for="commit-template">Commit Message Template:</label>
+          <input
+            type="text"
+            id="commit-template"
+            value="LeetCode #{number} - {title} [{language}]"
+          />
+          <small class="help-text">Tokens: {number}, {title}, {slug}, {language}</small>
+        </div>
+
+        <div class="form-group">
+          <label for="duplicate-strategy">Duplicate Solution Handling:</label>
+          <select id="duplicate-strategy">
+            <option value="skip">Skip existing files (Recommended)</option>
+            <option value="overwrite">Overwrite existing solution</option>
+            <option value="version">Create versioned file (e.g. Solution_v2.java)</option>
+          </select>
+        </div>
+
+        <!-- Feature 12: Co-Author -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="coauthor-name">Co-Author Name <span class="optional-tag">optional</span></label>
+            <input type="text" id="coauthor-name" placeholder="e.g. Pair Partner" />
+          </div>
+          <div class="form-group flex-1">
+            <label for="coauthor-email">Co-Author Email <span class="optional-tag">optional</span></label>
+            <input type="email" id="coauthor-email" placeholder="e.g. partner@example.com" />
+          </div>
+        </div>
+        <small class="help-text" style="margin-top:-8px;">Appends <code>Co-authored-by:</code> trailer to every commit message when set.</small>
+
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="gen-problem-readme" checked />
+            <span>Generate README.md inside each problem folder with problem description</span>
+          </label>
+
+          <label class="checkbox-label">
+            <input type="checkbox" id="gen-global-readme" />
+            <span>Maintain an indexed table in repository's root README.md</span>
+          </label>
+
+          <!-- Feature 4: GitHub Actions -->
+          <label class="checkbox-label">
+            <input type="checkbox" id="enable-workflow" />
+            <span>Generate GitHub Actions workflow to track solution counts on push</span>
+          </label>
+
+          <!-- Feature 10: Contest folder -->
+          <label class="checkbox-label">
+            <input type="checkbox" id="enable-contest-folder" checked />
+            <span>Push contest solutions to a separate <code>contests/</code> folder</span>
+          </label>
+
+          <label class="checkbox-label">
+            <input type="checkbox" id="debug-mode" />
+            <span>Enable Debug Mode (verbose logging in DevTools console)</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Section 4: Initial Sync (Bulk Import) -->
+      <section class="card">
+        <h2>4. Import Past Solutions</h2>
+        <p class="section-desc">Synchronize accepted solutions previously solved on LeetCode.</p>
+
+        <div class="form-row align-center">
+          <div class="form-group flex-1">
+            <label for="initial-sync-limit">Quantity to import:</label>
+            <select id="initial-sync-limit">
+              <option value="10">Last 10 accepted</option>
+              <option value="50" selected>Last 50 accepted</option>
+              <option value="100">Last 100 accepted</option>
+              <option value="all">All available</option>
+            </select>
+          </div>
+          <button id="initial-sync-btn" class="primary-btn" style="margin-top: 10px;">Start Import</button>
+        </div>
+        <div id="initial-sync-status" class="sync-progress-banner hidden"></div>
+      </section>
+
+      <!-- Section 5: Skipped Problems (Feature 11) -->
+      <section class="card">
+        <h2>5. Skipped Problems</h2>
+        <p class="section-desc">Problems you've marked to never push automatically. You can remove them from the skip list here.</p>
+        <div id="skipped-slugs-list" class="skipped-list">
+          <div class="text-center text-muted" style="padding:12px 0;">No problems skipped yet.</div>
+        </div>
+      </section>
+
+      <!-- Section 6: Save & Action Bar -->
+      <div class="save-bar">
+        <button id="save-settings-btn" class="primary-btn save-btn">Save All Settings</button>
+        <span id="save-status" class="save-status-msg"></span>
+      </div>
+
+      <!-- Section 7: Export Backup (Feature 14) -->
+      <section class="card">
+        <h2>6. Data &amp; Backup</h2>
+        <p class="section-desc">Export your entire LeetPush database (sync history, queue, settings) as a JSON file for backup or migration.</p>
+        <div class="button-row">
+          <button id="export-backup-btn" class="secondary-btn">⬇ Export Backup (JSON)</button>
+        </div>
+        <small class="help-text">Your GitHub token is <strong>not</strong> included in the export for security.</small>
+      </section>
+
+      <!-- Section 8: Sync History Table -->
+      <section class="card full-width">
+        <div class="history-header">
+          <h2>Sync History</h2>
+          <button id="clear-history-btn" class="secondary-btn">Clear History</button>
+        </div>
+        <div class="table-container">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>#</th>
+                <th>Problem</th>
+                <th>Language</th>
+                <th>Target Path</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body">
+              <tr>
+                <td colspan="6" class="text-center text-muted">No synchronization records yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

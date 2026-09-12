@@ -1,0 +1,74 @@
+{
+  "manifest_version": 3,
+  "name": "LeetPush – LeetCode to GitHub",
+  "short_name": "LeetPush",
+  "version": "1.0.0",
+  "description": "Automatically push your accepted LeetCode solutions to GitHub.",
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "LeetPush"
+  },
+
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode.com/*"],
+      "js": ["interceptor.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://leetcode.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "options_page": "options.html",
+
+  "permissions": [
+    "storage",
+    "notifications",
+    "identity",
+    "alarms"
+  ],
+
+  "host_permissions": [
+    "https://leetcode.com/*",
+    "https://api.github.com/*"
+  ],
+
+  "oauth2": {
+    "client_id": "YOUR_GITHUB_OAUTH_CLIENT_ID",
+    "scopes": ["repo"]
+  },
+
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src https://api.github.com https://github.com; img-src 'self' data: https:;"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["https://leetcode.com/*"]
+    }
+  ]
+}

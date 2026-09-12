@@ -1,0 +1,31 @@
+{
+  "name": "leetpush",
+  "version": "1.0.0",
+  "description": "Automatically sync your accepted LeetCode solutions to GitHub",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch --mode development",
+    "build": "tsc --noEmit && node scripts/build-extension.js",
+    "build:fast": "node scripts/build-extension.js",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "package": "npm run build && node scripts/package-extension.js"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.270",
+    "@vitest/coverage-v8": "^1.6.0",
+    "jsdom": "^29.1.1",
+    "rimraf": "^5.0.9",
+    "typescript": "^5.5.4",
+    "vite": "^5.3.5",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
