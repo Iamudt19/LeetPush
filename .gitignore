@@ -6,6 +6,7 @@ dist/
 
 # Old zip artifacts
 *.zip
+!leetpush.zip
 
 # Environment
 .env
