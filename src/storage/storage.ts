@@ -195,24 +195,25 @@ export async function markWorkflowGenerated(repo: string): Promise<void> {
 // ─── Full state dump for popup ───────────────────────────────────────────────
 
 export async function getStorageData(): Promise<StorageData> {
-  const [config, history, queue, ids, totals, skippedSlugs] = await Promise.all([
-    getConfig(),
-    getSyncHistory(),
-    getPendingQueue(),
-    getSyncedIds(),
-    getTotals(),
-    getSkippedSlugs(),
-  ]);
-  const lastSyncResult = await chrome.storage.local.get(STORAGE_KEYS.LAST_SYNC_AT);
+  const all = await chrome.storage.local.get(null);
+  const config = (all[STORAGE_KEYS.CONFIG] as GitHubConfig) ?? undefined;
+  const history = (all[STORAGE_KEYS.SYNC_HISTORY] as SyncRecord[]) ?? [];
+  const queue = (all[STORAGE_KEYS.PENDING_QUEUE] as PendingSync[]) ?? [];
+  const ids = (all[STORAGE_KEYS.SYNCED_IDS] as string[]) ?? [];
+  const totalSynced = (all[STORAGE_KEYS.TOTAL_SYNCED] as number) ?? 0;
+  const totalFailed = (all[STORAGE_KEYS.TOTAL_FAILED] as number) ?? 0;
+  const skippedSlugs = (all[STORAGE_KEYS.SKIPPED_SLUGS] as string[]) ?? [];
+  const lastSyncAt = (all[STORAGE_KEYS.LAST_SYNC_AT] as number) ?? undefined;
+
   return {
-    githubConfig: config ?? undefined,
+    githubConfig: config,
     syncHistory: history,
     pendingQueue: queue,
-    syncedSubmissionIds: [...ids],
+    syncedSubmissionIds: ids,
     skippedSlugs,
-    totalSynced: totals.totalSynced,
-    totalFailed: totals.totalFailed,
-    lastSyncAt: (lastSyncResult[STORAGE_KEYS.LAST_SYNC_AT] as number) ?? undefined,
+    totalSynced,
+    totalFailed,
+    lastSyncAt,
   };
 }
 

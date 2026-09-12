@@ -272,8 +272,14 @@ async function init() {
     try {
       data = await getStorageData();
     } catch {
-      // Fallback via runtime message if direct storage is restricted
-      data = (await chrome.runtime.sendMessage({ type: 'GET_STATUS' })) as StorageData;
+      data = {
+        syncHistory: [],
+        pendingQueue: [],
+        syncedSubmissionIds: [],
+        skippedSlugs: [],
+        totalSynced: 0,
+        totalFailed: 0,
+      };
     }
 
     const config = data.githubConfig;
