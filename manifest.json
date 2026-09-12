@@ -62,7 +62,7 @@
   },
 
   "content_security_policy": {
-    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src https://api.github.com https://github.com; img-src 'self' data: https:;"
+    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src https://api.github.com https://github.com https://leetcode.com https://*.leetcode.com https://leetcode.cn https://*.leetcode.cn; img-src 'self' data: https:;"
   },
 
   "web_accessible_resources": [
