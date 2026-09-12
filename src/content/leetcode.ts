@@ -274,7 +274,10 @@ function init(): void {
         payload: { submission },
       };
 
-      const response = await chrome.runtime.sendMessage(message);
+      const response = await chrome.runtime.sendMessage(message).catch((err) => {
+        logger.warn('Service worker message error:', err);
+        return null;
+      });
 
       if (response?.status === 'synced') {
         toast.show(`✓ Synced #${submission.problem.number} ${submission.problem.title} to GitHub`, 'success', 4000);

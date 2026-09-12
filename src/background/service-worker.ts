@@ -137,10 +137,20 @@ chrome.runtime.onMessage.addListener((message: Message<any>, _sender, sendRespon
 
   // Return true to keep message channel open for async response
   handleAsync()
-    .then(sendResponse)
+    .then((res) => {
+      try {
+        sendResponse(res);
+      } catch {
+        // Message channel closed or Service Worker unloaded by Chrome
+      }
+    })
     .catch((err) => {
       logger.error('Unhandled error in background message handler', err);
-      sendResponse({ error: err?.message || 'Internal error' });
+      try {
+        sendResponse({ error: err?.message || 'Internal error' });
+      } catch {
+        // Ignore response errors on closed channels
+      }
     });
 
   return true;
