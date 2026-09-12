@@ -159,6 +159,16 @@ export async function fetchSubmittedCodeBySubmissionId(
  */
 export function extractCodeFromMonacoDom(): string | null {
   try {
+    // Try accessing Monaco Editor model directly from window if accessible
+    const win = window as any;
+    if (win.monaco?.editor?.getModels) {
+      const models = win.monaco.editor.getModels();
+      if (models && models.length > 0) {
+        const val = models[0].getValue();
+        if (val && val.trim().length > 0) return val;
+      }
+    }
+    // DOM Fallback (Note: view-lines only renders visible viewport lines due to virtual scrolling)
     const lines = document.querySelectorAll('.view-lines .view-line');
     if (lines && lines.length > 0) {
       const code = Array.from(lines)
