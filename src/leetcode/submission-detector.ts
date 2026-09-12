@@ -75,15 +75,20 @@ export class SubmissionDetector {
       const data = detail.data;
       logger.info('Received network submission event:', detail.source);
 
+      // Ignore test runs (runcode_...)
+      const rawId = String(data.submission_id || this.extractSubmissionIdFromUrl(detail.url) || '');
+      if (rawId.includes('runcode') || rawId.includes('interpret')) {
+        logger.debug('Ignoring test run (Run Code) event:', rawId);
+        return;
+      }
+
       // Handle classic check endpoint data
       if (
         data.status_msg === 'Accepted' ||
         data.state === 'SUCCESS' ||
         data.status_code === 10
       ) {
-        const submissionId = String(
-          data.submission_id || this.extractSubmissionIdFromUrl(detail.url) || ''
-        );
+        const submissionId = /^\d+$/.test(rawId) ? rawId : '';
         if (submissionId) {
           await this.handleAcceptedSubmission({
             submissionId,
@@ -93,7 +98,7 @@ export class SubmissionDetector {
             memory: data.status_memory || data.memory || '',
           });
         } else {
-          // If submissionId wasn't in payload, poll via GraphQL
+          // If submissionId wasn't a valid numeric ID, poll via GraphQL for official submission
           this.triggerActivePollForAccepted();
         }
       }
@@ -303,6 +308,10 @@ export class SubmissionDetector {
     memory?: string;
   }): Promise<void> {
     const { submissionId } = raw;
+    if (!/^\d+$/.test(submissionId)) {
+      logger.debug(`Ignoring non-numeric submission ID (test run): #${submissionId}`);
+      return;
+    }
     if (this.processedIds.has(submissionId)) {
       return;
     }

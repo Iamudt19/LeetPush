@@ -25,7 +25,7 @@
           : '';
 
       // Intercept submission check endpoint: /submissions/detail/<id>/check/
-      if (url.includes('/submissions/detail/') && url.includes('/check/')) {
+      if (url.includes('/submissions/detail/') && url.includes('/check/') && !url.includes('runcode')) {
         const clone = response.clone();
         clone
           .json()
