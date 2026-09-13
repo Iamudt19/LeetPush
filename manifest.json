@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "LeetPush – LeetCode to GitHub",
   "short_name": "LeetPush",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Automatically push your accepted LeetCode solutions to GitHub.",
 
   "icons": {
