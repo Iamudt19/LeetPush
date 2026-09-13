@@ -95,7 +95,7 @@ export async function fetchSubmittedCodeBySubmissionId(
   }
 
   const query = `
-    query submissionDetails($submissionId: Int!) {
+    query submissionDetail($submissionId: Int!) {
       submissionDetail(submissionId: $submissionId) {
         code
         timestamp
@@ -124,7 +124,7 @@ export async function fetchSubmittedCodeBySubmissionId(
       headers,
       credentials: 'include',
       body: JSON.stringify({
-        operationName: 'submissionDetails',
+        operationName: 'submissionDetail',
         query,
         variables: { submissionId: numericId },
       }),

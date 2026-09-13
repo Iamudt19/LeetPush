@@ -6,6 +6,9 @@ const PREFIX = '[LeetPush]';
  * Token and secret sanitizer. Ensures no tokens or sensitive headers leak into logs.
  */
 function sanitize(arg: unknown): unknown {
+  if (arg instanceof Error) {
+    return `${arg.name}: ${arg.message}`;
+  }
   if (typeof arg === 'string') {
     // Redact Bearer tokens, GitHub personal tokens (ghp_, gho_, etc.)
     return arg

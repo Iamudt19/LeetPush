@@ -271,13 +271,20 @@ function init(): void {
     toast.show(`Accepted: #${submission.problem.number} ${submission.problem.title}. Syncing to GitHub...`, 'info', 5000);
 
     try {
+      if (!chrome.runtime?.id) {
+        toast.show('⚠️ Extension reloaded. Please refresh the page to sync.', 'warn', 6000);
+        logger.warn('Extension context is invalidated (page requires reload after extension update)');
+        return;
+      }
+
       const message: Message<SubmissionAcceptedPayload> = {
         type: 'SUBMISSION_ACCEPTED',
         payload: { submission },
       };
 
       const response = await chrome.runtime.sendMessage(message).catch((err) => {
-        logger.warn('Service worker message error:', err);
+        const msg = err?.message || String(err);
+        logger.warn('Service worker message warning:', msg);
         return null;
       });
 
@@ -295,8 +302,9 @@ function init(): void {
         }
       }
     } catch (err: any) {
-      logger.error('Failed to communicate with LeetPush service worker', err);
-      toast.show(`⚠️ Background worker unavailable: ${err?.message || 'Queued for retry'}`, 'warn', 5000);
+      const errMsg = err?.message || String(err);
+      logger.error('Failed to communicate with LeetPush service worker:', errMsg);
+      toast.show(`⚠️ Background worker unavailable: ${errMsg}`, 'warn', 5000);
     }
   });
 
