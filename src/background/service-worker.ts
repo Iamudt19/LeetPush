@@ -145,9 +145,10 @@ chrome.runtime.onMessage.addListener((message: Message<any>, _sender, sendRespon
       }
     })
     .catch((err) => {
-      logger.error('Unhandled error in background message handler', err);
+      const errMsg = err?.message || String(err);
+      logger.warn('Background message handler warning:', errMsg);
       try {
-        sendResponse({ error: err?.message || 'Internal error' });
+        sendResponse({ error: errMsg });
       } catch {
         // Ignore response errors on closed channels
       }
@@ -311,10 +312,13 @@ async function handleRetryPending(submissionId: string): Promise<SyncResult> {
 
 // ─── Initial Sync (Bulk Import) Handler ──────────────────────────────────────
 
-async function handleInitialSync(limit: 10 | 50 | 100 | 'all'): Promise<{ synced: number; skipped: number; failed: number }> {
+async function handleInitialSync(limit: 10 | 50 | 100 | 'all'): Promise<{ synced: number; skipped: number; failed: number; error?: string }> {
   const config = await getConfig();
   if (!config || !config.token || !config.repository) {
-    throw new Error('GitHub is not configured. Cannot perform initial sync.');
+    const errorMsg = 'GitHub is not configured. Please connect your GitHub account in settings.';
+    logger.warn(errorMsg);
+    showNotification('LeetPush – Setup Required', errorMsg, true);
+    return { synced: 0, skipped: 0, failed: 0, error: errorMsg };
   }
 
   const targetLimit = limit === 'all' ? 1000 : limit;
