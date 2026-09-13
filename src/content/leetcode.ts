@@ -284,7 +284,11 @@ function init(): void {
 
       const response = await chrome.runtime.sendMessage(message).catch((err) => {
         const msg = err?.message || String(err);
-        logger.warn('Service worker message warning:', msg);
+        if (msg.includes('Extension context invalidated') || msg.includes('context invalidated')) {
+          toast.show('⚠️ LeetPush updated. Please refresh this page (F5) to re-enable auto-sync.', 'warn', 7000);
+        } else {
+          logger.warn('Service worker message warning:', msg);
+        }
         return null;
       });
 
@@ -303,8 +307,12 @@ function init(): void {
       }
     } catch (err: any) {
       const errMsg = err?.message || String(err);
-      logger.error('Failed to communicate with LeetPush service worker:', errMsg);
-      toast.show(`⚠️ Background worker unavailable: ${errMsg}`, 'warn', 5000);
+      if (errMsg.includes('Extension context invalidated') || errMsg.includes('context invalidated')) {
+        toast.show('⚠️ LeetPush updated. Please refresh this page (F5) to re-enable auto-sync.', 'warn', 7000);
+      } else {
+        logger.error('Failed to communicate with LeetPush service worker:', errMsg);
+        toast.show(`⚠️ Background worker unavailable: ${errMsg}`, 'warn', 5000);
+      }
     }
   });
 
