@@ -155,22 +155,61 @@ export async function fetchSubmittedCodeBySubmissionId(
 }
 
 /**
- * Fallback: Extract current code from Monaco Editor DOM elements
+ * Request Monaco editor full model code from Main World interceptor
  */
-export function extractCodeFromMonacoDom(): string | null {
+export async function requestMonacoCodeFromMainWorld(): Promise<string | null> {
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      const monacoEl = document.getElementById('leetpush-monaco-code') as HTMLTextAreaElement | null;
+      resolve(monacoEl?.value?.trim() || null);
+    }, 250);
+
+    const handleResponse = (e: Event) => {
+      clearTimeout(timeout);
+      window.removeEventListener('LEETPUSH_RESPONSE_MONACO_CODE', handleResponse);
+      const customEvt = e as CustomEvent;
+      const code =
+        customEvt.detail?.code ||
+        (document.getElementById('leetpush-monaco-code') as HTMLTextAreaElement)?.value;
+      resolve(code?.trim() || null);
+    };
+
+    window.addEventListener('LEETPUSH_RESPONSE_MONACO_CODE', handleResponse);
+    window.dispatchEvent(new CustomEvent('LEETPUSH_REQUEST_MONACO_CODE'));
+  });
+}
+
+/**
+ * Fallback: Extract current code from Monaco Editor via Main World bridge or DOM elements
+ */
+export async function extractCodeFromMonacoDom(): Promise<string | null> {
   try {
-    // Try accessing Monaco Editor model directly from window if accessible
+    // 1. Check if interceptor saved full submitted code in hidden DOM element
+    const submittedEl = document.getElementById('leetpush-submitted-code') as HTMLTextAreaElement | null;
+    if (submittedEl && submittedEl.value && submittedEl.value.trim().length > 0) {
+      return submittedEl.value;
+    }
+
+    // 2. Try accessing Monaco Editor model directly from window if in main world / un-isolated context
     const win = window as any;
     if (win.monaco?.editor?.getModels) {
       const models = win.monaco.editor.getModels();
-      if (models && models.length > 0) {
-        const val = models[0].getValue();
+      for (const m of models) {
+        const val = m.getValue();
         if (val && val.trim().length > 0) return val;
       }
     }
-    // DOM Fallback (Note: view-lines only renders visible viewport lines due to virtual scrolling)
+
+    // 3. Request Monaco Editor model text from Main World context via interceptor script
+    const mainWorldCode = await requestMonacoCodeFromMainWorld();
+    if (mainWorldCode && mainWorldCode.trim().length > 0) {
+      return mainWorldCode;
+    }
+
+    // 4. Last-resort DOM Fallback (Note: view-lines only renders visible viewport lines due to virtual scrolling)
     const lines = document.querySelectorAll('.view-lines .view-line');
     if (lines && lines.length > 0) {
+      logger.warn('Falling back to view-lines DOM scraping (may be partial if editor is scrolled)');
       const code = Array.from(lines)
         .map((l) => l.textContent || '')
         .join('\n');
@@ -208,9 +247,9 @@ export async function resolveSubmittedCode(
   }
 
   // 3. Fallback to Monaco editor DOM if API code retrieval failed
-  const monacoCode = extractCodeFromMonacoDom();
+  const monacoCode = await extractCodeFromMonacoDom();
   if (monacoCode && monacoCode.trim().length > 0) {
-    logger.warn('Falling back to Monaco editor DOM for submitted code');
+    logger.warn('Falling back to Monaco editor full code resolution');
     return { code: monacoCode };
   }
 
