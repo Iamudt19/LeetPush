@@ -211,6 +211,7 @@ export async function fetchProblemInfoViaGraphQL(slug: string): Promise<ProblemI
       method: 'POST',
       headers,
       body: JSON.stringify({
+        operationName: 'questionData',
         query,
         variables: { titleSlug: slug },
       }),
@@ -304,7 +305,10 @@ export async function checkIfDailyChallenge(slug: string): Promise<boolean> {
     const res = await fetch('https://leetcode.com/graphql', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({
+        operationName: 'questionOfToday',
+        query,
+      }),
     });
 
     if (res.ok) {

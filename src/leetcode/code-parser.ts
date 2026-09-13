@@ -51,6 +51,7 @@ export async function fetchLatestAcceptedSubmissionForSlug(
       headers,
       credentials: 'include',
       body: JSON.stringify({
+        operationName: 'recentAcSubmissions',
         query,
         variables: { limit: 10 },
       }),
@@ -123,13 +124,15 @@ export async function fetchSubmittedCodeBySubmissionId(
       headers,
       credentials: 'include',
       body: JSON.stringify({
+        operationName: 'submissionDetails',
         query,
         variables: { submissionId: numericId },
       }),
     });
 
     if (!res.ok) {
-      logger.warn(`GraphQL submissionDetail request failed with HTTP ${res.status}`);
+      const errText = await res.text().catch(() => '');
+      logger.warn(`GraphQL submissionDetail request failed with HTTP ${res.status}: ${errText}`);
       return null;
     }
 

@@ -340,6 +340,7 @@ async function handleInitialSync(limit: 10 | 50 | 100 | 'all'): Promise<{ synced
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({
+        operationName: 'recentAcSubmissions',
         query,
         variables: { limit: targetLimit },
       }),
@@ -401,6 +402,7 @@ async function handleInitialSync(limit: 10 | 50 | 100 | 'all'): Promise<{ synced
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
+          operationName: 'submissionDetail',
           query: detailQuery,
           variables: { submissionId: parseInt(subId, 10) },
         }),
