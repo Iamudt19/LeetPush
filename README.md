@@ -1,6 +1,9 @@
-﻿# ⚡ LeetPush — LeetCode to GitHub, Automatically
+# ⚡ LeetPush — LeetCode to GitHub, Automatically
 
 > Solve a problem on LeetCode. Get an "Accepted" verdict. **LeetPush** automatically pushes your exact code, stats, and approach notes to your GitHub repository. Zero extra clicks required.
+
+[![Download Zip](https://img.shields.io/badge/📦_Download_Extension-leetpush.zip-00f2fe?style=for-the-badge)](https://github.com/Iamudt19/LeetPush/raw/main/leetpush.zip)
+[![Release](https://img.shields.io/badge/Release-v2.0.0-4facfe?style=for-the-badge)](https://github.com/Iamudt19/LeetPush/releases/tag/v2.0.0)
 
 ---
 
@@ -9,7 +12,7 @@
 ### Option A — Instant Install (No Coding Required)
 *(Best for non-developers or sharing directly with friends)*
 
-1. **Download the Zip**: Download `leetpush.zip` from the [Releases](https://github.com/YOUR_USERNAME/leetpush/releases) page (or grab `leetpush.zip` directly from this repository).
+1. **Download the Zip**: [**Click Here to Download `leetpush.zip`**](https://github.com/Iamudt19/LeetPush/raw/main/leetpush.zip) (or get it from the [v2.0.0 Releases Page](https://github.com/Iamudt19/LeetPush/releases/tag/v2.0.0)).
 2. **Unpack it**: Extract `leetpush.zip` into a folder on your computer.
 3. **Load into Chrome**:
    - Open Chrome and navigate to `chrome://extensions/`
