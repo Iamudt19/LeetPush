@@ -21,8 +21,10 @@ import {
   removeSkippedSlug,
   isSlugSkipped,
   updateSyncRecord,
+  getSyncHistory,
 } from '../storage/storage';
 import { syncSubmission, SyncResult } from '../github/github-sync';
+import { GitHubApi, decodeUtf8Base64 } from '../github/github-api';
 import { logger } from '../utils/logger';
 
 const RETRY_ALARM_NAME = 'LEETPUSH_PROCESS_PENDING_QUEUE';
@@ -124,9 +126,7 @@ chrome.runtime.onMessage.addListener((message: Message<any>, _sender, sendRespon
 
       case 'UPDATE_SUBMISSION_NOTE': {
         const { submissionId, notes, complexity } = message.payload as UpdateNotePayload;
-        await updateSyncRecord(submissionId, { notes });
-        logger.info(`Saved note for submission #${submissionId}`);
-        return { success: true, submissionId, notes, complexity };
+        return await handleUpdateSubmissionNote(submissionId, notes, complexity);
       }
 
       default:
@@ -308,6 +308,97 @@ async function handleRetryPending(submissionId: string): Promise<SyncResult> {
   }
 
   return result;
+}
+
+// ─── Feature 2: Update Submission Note Handler ───────────────────────────────
+
+/**
+ * Saves a user-written note + complexity for a submission:
+ *  1. Patches the local sync history record.
+ *  2. Re-generates the problem README with the note/complexity included.
+ *  3. Pushes the updated README back to GitHub.
+ */
+async function handleUpdateSubmissionNote(
+  submissionId: string,
+  notes: string,
+  complexity: string
+): Promise<{ success: boolean; error?: string }> {
+  // 1. Update local storage first (best-effort, non-blocking on failure)
+  await updateSyncRecord(submissionId, { notes });
+  logger.info(`Saved note locally for submission #${submissionId}`);
+
+  // 2. Find the matching sync history record to get the GitHub path + submission data
+  const history = await getSyncHistory();
+  const record = history.find((r) => r.submissionId === submissionId);
+  if (!record || !record.githubPath) {
+    logger.warn(`UPDATE_SUBMISSION_NOTE: No sync record found for submission #${submissionId}`);
+    return { success: true }; // local save succeeded; GitHub push skipped
+  }
+
+  // 3. Load GitHub config
+  const config = await getConfig();
+  if (!config || !config.token || !config.repository) {
+    logger.warn('UPDATE_SUBMISSION_NOTE: GitHub not configured – skipping remote update');
+    return { success: true }; // local save succeeded; GitHub push skipped
+  }
+
+  const [owner, repo] = config.repository.split('/');
+  if (!owner || !repo) {
+    return { success: true };
+  }
+
+  // 4. Derive the problem README path from the solution file path
+  // e.g.  solutions/0001-two-sum/solution.py  →  solutions/0001-two-sum/README.md
+  const problemFolderPath = record.githubPath.substring(0, record.githubPath.lastIndexOf('/'));
+  const readmePath = `${problemFolderPath}/README.md`;
+
+  try {
+    const api = new GitHubApi(config.token);
+    const existingReadme = await api.getFile(owner, repo, readmePath, config.branch);
+
+    if (!existingReadme) {
+      logger.warn(`UPDATE_SUBMISSION_NOTE: No existing README found at ${readmePath}. Skipping GitHub push.`);
+      return { success: true };
+    }
+
+    // Fetch the existing README and patch it in-place, preserving the ## Solution code block.
+    let content = decodeUtf8Base64(existingReadme.content);
+
+    // Helper: inject or replace a markdown section before "## Solution"
+    const upsertSection = (md: string, heading: string, body: string): string => {
+      const sectionRegex = new RegExp(`\\n## ${heading}\\n[\\s\\S]*?(?=\\n## |$)`, 'i');
+      const newSection = `\n## ${heading}\n\n${body}\n`;
+      if (sectionRegex.test(md)) {
+        return md.replace(sectionRegex, newSection);
+      }
+      // Insert before "## Solution"
+      return md.replace(/(\n## Solution)/i, `${newSection}$1`);
+    };
+
+    if (notes) {
+      content = upsertSection(content, 'Approach', notes);
+    }
+    if (complexity) {
+      content = upsertSection(content, 'Complexity', complexity);
+    }
+
+    await api.createOrUpdateFile({
+      owner,
+      repo,
+      path: readmePath,
+      content,
+      message: `Docs: add note for LeetCode #${record.problemNumber} - ${record.problemTitle}`,
+      branch: config.branch,
+      sha: existingReadme.sha,
+    });
+
+    logger.info(`Updated GitHub README at ${readmePath} with note for #${submissionId}`);
+    return { success: true };
+  } catch (err: any) {
+    const errMsg = err?.message || String(err);
+    logger.warn(`Failed to push note README to GitHub for #${submissionId}:`, errMsg);
+    return { success: false, error: errMsg };
+  }
 }
 
 // ─── Initial Sync (Bulk Import) Handler ──────────────────────────────────────

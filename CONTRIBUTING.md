@@ -8,7 +8,7 @@ Thank you for taking the time to contribute to **LeetPush**! 🎉
 
 1. **Fork and clone the repository**:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/leetpush.git
+   git clone https://github.com/iamudt19/leetpush.git
    cd leetpush
    ```
 
