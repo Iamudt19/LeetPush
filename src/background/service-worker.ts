@@ -470,8 +470,8 @@ async function handleInitialSync(limit: 10 | 50 | 100 | 'all'): Promise<{ synced
     try {
       // Fetch full submission detail
       const detailQuery = `
-        query submissionDetail($submissionId: Int!) {
-          submissionDetail(submissionId: $submissionId) {
+        query submissionDetails($submissionId: Int!) {
+          submissionDetails(submissionId: $submissionId) {
             code
             runtimeDisplay
             memoryDisplay
@@ -497,7 +497,7 @@ async function handleInitialSync(limit: 10 | 50 | 100 | 'all'): Promise<{ synced
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          operationName: 'submissionDetail',
+          operationName: 'submissionDetails',
           query: detailQuery,
           variables: { submissionId: parseInt(subId, 10) },
         }),
@@ -509,7 +509,7 @@ async function handleInitialSync(limit: 10 | 50 | 100 | 'all'): Promise<{ synced
       }
 
       const detailJson = await detailRes.json();
-      const detail = detailJson?.data?.submissionDetail;
+      const detail = detailJson?.data?.submissionDetails;
       if (!detail || !detail.code) {
         failed++;
         continue;

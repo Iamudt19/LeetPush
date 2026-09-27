@@ -95,8 +95,8 @@ export async function fetchSubmittedCodeBySubmissionId(
   }
 
   const query = `
-    query submissionDetail($submissionId: Int!) {
-      submissionDetail(submissionId: $submissionId) {
+    query submissionDetails($submissionId: Int!) {
+      submissionDetails(submissionId: $submissionId) {
         code
         timestamp
         statusDisplay
@@ -124,7 +124,7 @@ export async function fetchSubmittedCodeBySubmissionId(
       headers,
       credentials: 'include',
       body: JSON.stringify({
-        operationName: 'submissionDetail',
+        operationName: 'submissionDetails',
         query,
         variables: { submissionId: numericId },
       }),
@@ -137,9 +137,9 @@ export async function fetchSubmittedCodeBySubmissionId(
     }
 
     const json = await res.json();
-    const detail = json?.data?.submissionDetail;
+    const detail = json?.data?.submissionDetails;
     if (!detail || !detail.code) {
-      logger.warn('GraphQL submissionDetail returned empty code', json);
+      logger.warn('GraphQL submissionDetails returned empty code', json);
       return null;
     }
 
